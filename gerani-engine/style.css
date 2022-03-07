@@ -1,0 +1,244 @@
+/* RESET CSS */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video {
+border:0;
+font-size:100%;
+font:inherit;
+vertical-align:baseline;
+margin:0;
+padding:0;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {
+display:block;
+}
+
+/* SHAPING BASICS */
+body {
+line-height:1;
+font:1em 'Courier New', Courier, monospace;
+vertical-align:baseline;
+min-height:100%;
+//min-width:1115px;
+background:#FFF;
+color:#000;
+margin:10px;
+overflow-y: scroll;
+}
+
+ol,ul {
+list-style:none;
+}
+
+blockquote,q {
+quotes:none;
+}
+
+blockquote:before,blockquote:after,q:before,q:after {
+content:none;
+}
+
+table {
+border-collapse:collapse;
+border-spacing:0;
+}
+
+/* SHAPING THE BROWSER */
+#window {
+font:1em 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
+background:#FFF;
+border:1px solid #000;
+width:500px;
+overflow:hidden;
+top:10px;
+right:10px;
+position:fixed;
+cursor:move;
+padding:10px;
+}
+
+#menu {
+height:340px;
+}
+
+#menu,.header {
+position:relative;
+}
+
+#window a,#window a:link,#window a:visited {
+text-decoration:none;
+color:#00F;
+}
+
+#window a:hover,#window a:active {
+text-decoration:line-through;
+}
+
+#window .extra a,#window .extra a:link,#window .extra a:visited {
+text-decoration:none;
+color:red;
+}
+
+#window .extra a:hover,#window .extra a:active {
+text-decoration:line-through;
+}
+
+select {
+border:1px solid #000;
+height:300px;
+overflow-y:auto;
+margin:0;
+padding:0;
+font-family: 'Lucida Grande', 'Trebuchet MS', Garuda, Sans-Serif;
+font-size: 11px;
+font-style: normal;
+font-variant: normal;
+font-weight: normal;
+}
+
+form {
+width:1%;
+margin:0;
+}
+
+.header {
+margin:0 0 5px;
+}
+
+#footer p {
+color:#000;
+}
+
+#window p .big {
+font:1.7em Helvetica, Arial, San-Serif;
+font-weight:700;
+color:#000;
+}
+
+#window p .extra {
+font:1em 'Courier New', Courier, mono;
+color:red;
+text-align:right;
+right:10px;
+position:absolute;
+}
+
+#window p {
+font:.7em 'Courier New', Courier, mono;
+font-weight:400;
+color:#00F;
+}
+
+#window .footer p {
+color:#000;
+}
+
+#window .footer,#window .header {
+margin:0 0 2px;
+}
+
+.loadbar {
+height:1px;
+width:2px;
+background:red;
+border:0;
+margin:3px 0 0;
+}
+
+/* SHAPING THE CONTENT */
+#container {
+font:.8em 'Courier New', Courier, mono;
+width:555px;
+margin:10px 0 0 10px;
+}
+#container .noscript
+{
+color: #FF0000;
+font:1em 'Courier New', Courier, mono;
+text-transform:uppercase;
+font-weight:400;
+}
+#title {
+font:4em 'Courier New', Courier, mono;
+text-transform:uppercase;
+}
+
+#section-title {
+font:2em 'Courier New', Courier, mono;
+text-transform:uppercase;
+margin:0 0 20px;
+}
+
+a,a:link,a:visited {
+text-decoration:none;
+color:red;
+}
+
+a:hover,a:active {
+text-decoration:line-through;
+color:red;
+}
+
+#content img {
+width:545px;
+height:auto;
+border:1px solid #000;
+margin:15px 5px;
+}
+
+#content iframe {
+border:1px solid #000;
+margin:15px 5px;
+}
+
+#content code {
+width:520px;
+color:#00F;
+border:1px solid #000;
+display:block;
+overflow-x:auto;
+margin:10px 5px;
+padding:10px;
+}
+
+#content code c {
+color:#000;
+}
+
+#content code .highlighter {
+color:red;
+}
+
+#content code .lowlighter {
+color:#000!important;
+}
+
+#content code .halflighter {
+color:#00F;
+}
+
+#content h2 {
+font:1.2em 'Courier New', Courier, mono;
+text-transform:uppercase;
+display:block;
+padding:.5em 0 .1em;
+}
+
+#content div {
+margin:0 0 1.2em;
+}
+
+#content p {
+margin:.8em 0;
+}
+
+#content b {
+font:1em 'Courier New', Courier, mono;
+text-transform:uppercase;
+font-weight:400;
+}
+
+#content i {
+font:1em 'Courier New', Courier, mono;
+font-style:italic;
+}

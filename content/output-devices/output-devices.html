@@ -1,0 +1,58 @@
+<p id="intro">
+For that assignment I decided to do a version of <a href="http://academy.cba.mit.edu/classes/output_devices/index.html">Neil's Charlieplex LED Array</a> version 2 using flexible cooper.
+</p>
+<p><b>The Board</p></b>
+<img src="1.jpg">
+
+<p><b>Charlieplexing</p></b>
+<p>Charlieplexing takes advantatge of two facts: First, LED's are diodes, electricity can just flow in one direction. Second, the three-state logic capabilities of microcontrollers, most microcontrollers pins in addition to have 0 and 1 logic levels (ex. 0V - 5V) they are able to be on a third state where the port have a higher impedance than the circuit. That simply removes the output from the circuit.</p>
+<p>By using charlie plexing we can simply increase the number of LED's we can drive with a limited number of microcontroller pins.<br>
+</p>
+<img src="0.png">
+<p>Considering l the number of LED's and p the number of pins:</p>
+Using Charliplexing for 5 pins we get 20 LED's
+<code>
+l = p*(p–1)<br>
+</code>
+Using normal multiplexing we'll just get 6 LED's
+<code>
+l = (p/2)^2
+</code>
+On Neil's example we're going to run 20 LED's out of just 5 pins.
+<code>
+20 = 5*(5-1)<br>
+</code>
+
+<p><b>PCB making with a Vinyl Cutter</p></b>
+<p>You can run your Roland CAMM plotter directly from FABmodules. Remember that the name you give on your printer driver  settings should be the same set on the camm_send file in your fabmodules folder, by default it's vinyl. There are two extra tools you'll need: a pair of good tweezers and some transfer paper.</p>
+
+<p>1. Cut the bottom copper part <a href="http://academy.cba.mit.edu/classes/output_devices/array/hello.array.44.2.bottom.png">hello.array.44.2.bottom.png</a> on flexible cooper. Apply transfer paper on top and peel the whole circuit. Stick it on a flat surface (ex: plywood) and press it hard with your fingers. Remove the transfer paper and use some tweezers to remove the cooper around your circuit tracks.</p>
+<img src="2.jpg">
+
+<p>2. Cut the vias layer <a href="http://academy.cba.mit.edu/classes/output_devices/array/hello.array.44.2.vias.png">hello.array.44.2.vias.png</a> on flexible epoxy film. Follow the same steps as before but remove the inner holes with some tweezers while you have it stick it on the transfer film. </p>
+<img src="3.jpg">
+
+<p>3. Cut the top copper part <a href="http://academy.cba.mit.edu/classes/output_devices/array/hello.array.44.2.top.png">hello.array.44.2.top.png</a> on flexible cooper. Follow the same steps as before.</p>
+<img src="4.jpg">
+
+<p><b>Programming and testing</b></p>
+<img src="5.jpg">
+<p>When you have an array of LED's and you want to use them as a display you need to find a way to store the data. An easy way to do that is using two-dimensional arrays. We have 5 columns and 4 rows so we can store the whole display in 4 bytes. We can store each column as a single byte so we'll have 1 bytes per column.</p>
+<code>
+B11111<br>
+B00000
+</code>
+B is just a prefix to remember we are storing binary data. After that we have 5 values each one corresponding to the boolean state of a LED on the column. So here it is how it will look like if we want to store a character set:
+<code>
+byte caracter[3][4] = { <br>
+						{ B11111, B10100, B10100, B11111}, // A <br>
+                        { B11111, B10100, B10100, B11111}, // B	<br>
+                        { B11111, B10001, B10001, B10001}, // C … <br>
+};
+</code>
+<img src="6.jpg">
+
+
+
+
+

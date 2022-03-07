@@ -1,0 +1,269 @@
+<p id="intro">
+The FABenergy network is an small network of plugs that can measure the power consumption of what you plug on them and publish it to <a href="https://pachube.com/">Pachube</a>. The Pachube FABEnergy <a href="https://pachube.com/feeds/25784">feed</a> is being tested and is going to go live soon.<br>
+</p>
+<code>Documentation is still in process. Please, come back soon!</code>
+<img src="59.jpg">
+<img src="60.jpg">
+<p><b>Measuring Power Consumption</p></b>
+To measure the power consumption of a device we need to know the potential difference (V) and the electric current its drawing (I). Having both values we can calculate the power consumption by:
+<code>
+P = I*V
+</code>
+<p>Because I wanted to create a really simple node I decided just to measure the current and set the grid default value for the voltage (220V / 120 V). Although this method gives you some error when you're measuring low power consumptions above 1A it's more or less enough. There are different ways for measuring an electrical current. You can split them in to groups, invasive and non-invasive. Invasive methods have the advantage of requiring cheaper components, for example you can use an <a href="http://www.allegromicro.com/en/Products/Part_Numbers/0712/0712.pdf">ACS712</a> IC. However, this methods are not really suitable for DIY projects because it requires you work directly with high voltage. That's why I decided to use a non-invasive method. The are two main methods, current transformers based on the induction effect and hall-effect sensors based on the electromagnetic effect.</p>
+<img src="15.jpg">
+<p>For my project I decided to use a current transducer (CT) this sensor works by induction and it's based on the <a href="http://en.wikipedia.org/wiki/Rogowski_coil">Rogowski principle</a>. The current in the main wire produces a magnetic field in the ferrite core of the transducer. A secondary coil is wrapped around the ferrite core. However we still have to turn the current clamp output in a suitable voltage we can measure using our micro-controller ADC. First we need to create a voltage variation so a load is needed.</p>
+<code>
+I*R = V
+</code>
+<p>A simple resistor is setup in parallel with the current transducer acting as a load, creating a voltage drop proportional to the current flowing through the transducer. Because the current output is AC and the Attiny can't read a negative voltage a <a href="http://www.afrotechmods.com/groovy/voltage_divider/voltage_divider.htm">Voltage Divider</a> is needed. Considering the ADC voltage reference is set on Vref = 5V (VCC) we have a range of 0-5V. Using a voltage divider we provide the current transducer with 2.5V offsetting the original 0V to 2.5V so we don't have anymore a negative voltage.</p>
+<p>Finally to calculate the <a href="http://en.wikipedia.org/wiki/Root_mean_square#Average_electrical_power">Power Consumption Average</a> we need the Voltage RMS and the Current RMS. I based my code on Trystan Lea and Eric Sandeen work for the <a href="http://openenergymonitor.org/">Open Energy Monitor</a>. Considering the default value for the Voltage RMS is set on a default value, we'll just need to calculate the Current RMS from the values we get from our micro-controller 10-bits ADC (0-1023). </p>
+<code>
+<pre>
+&nbsp;&nbsp;<span style="color: #FF0000;">for</span> (<span style="color: #FF0000;">int</span> n=0; n&lt;Samples; n++)
+&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;I_lastSample=I_Sample;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sample&nbsp;=&nbsp;<span style="color: #FF0000;">analogRead</span>(inPinI);
+&nbsp;&nbsp;&nbsp;&nbsp;I_LastFiltered&nbsp;=&nbsp;I_Filtered;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Filtered&nbsp;=&nbsp;0.996*(I_LastFiltered+I_Sample-I_lastSample);
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sq&nbsp;=&nbsp;I_Filtered&nbsp;*&nbsp;I_Filtered;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sum&nbsp;+=&nbsp;I_Sq;
+&nbsp;&nbsp;}
+</pre>
+</code>
+<p>To calculate the current root means square (I RMS) we first take several reading and we filter them by comparing each reading with its past reading. Once we achieve a set number of measurements we calculate the root means square.</p>
+<code>
+<pre>
+&nbsp;&nbsp;I_Rms&nbsp;=&nbsp;I_Ratio&nbsp;*&nbsp;<span class="highlighter">sqrt</span>(I_Sum / Samples); 
+</pre>
+</code>
+<p>Once we have the Current RMS we can easily calculate the Power Average.</p>
+<code>
+<pre>
+&nbsp;&nbsp;<span class="highlighter">double</span> P_Rms = V_Rms * I_Rms;
+</pre>
+</code>
+If we put together all this concepts we get a quick function for calculating the power consumption.
+<code>
+<pre>
+<span class="highlighter">double</span> Power(<span class="highlighter">int</span> inPinI, <span class="highlighter">int</span> Samples)
+{&nbsp;
+
+#&nbsp;define&nbsp;I_Cal&nbsp;1
+#&nbsp;define&nbsp;V_Rms&nbsp;220
+#&nbsp;define&nbsp;I_Ratio&nbsp;1012&nbsp;/&nbsp;149&nbsp;*&nbsp;5&nbsp;/&nbsp;1024&nbsp;*&nbsp;I_Cal
+
+&nbsp;&nbsp;<span class="highlighter">int</span> I_lastSample = 0;
+&nbsp;&nbsp;<span class="highlighter">int</span> I_Sample = 0;
+&nbsp;&nbsp;<span class="highlighter">double</span> I_LastFiltered, I_Filtered;
+&nbsp;&nbsp;<span class="highlighter">double</span> I_Sq, I_Sum;
+
+
+&nbsp;&nbsp;<span class="highlighter">for</span> (<span class="highlighter">int</span> n=0; n&lt;Samples; n++)
+&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;I_lastSample=I_Sample;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sample&nbsp;=&nbsp;<span class="highlighter">analogRead</span>(inPinI);
+&nbsp;&nbsp;&nbsp;&nbsp;I_LastFiltered&nbsp;=&nbsp;I_Filtered;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Filtered&nbsp;=&nbsp;0.996*(I_LastFiltered+I_Sample-I_lastSample);
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sq&nbsp;=&nbsp;I_Filtered&nbsp;*&nbsp;I_Filtered;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sum&nbsp;+=&nbsp;I_Sq;
+&nbsp;&nbsp;}
+
+&nbsp;&nbsp;<span class="highlighter">double</span> I_Rms = I_Ratio * <span class="highlighter">sqrt</span>(I_Sum / Samples); 
+&nbsp;&nbsp;<span class="highlighter">double</span> P_Rms = V_Rms * I_Rms;
+&nbsp;&nbsp;<span class="highlighter">return</span> P_Rms;
+
+&nbsp;&nbsp;I_Sum&nbsp;=&nbsp;0;
+&nbsp;&nbsp;I_lastSample&nbsp;=&nbsp;0;
+&nbsp;&nbsp;I_Sample&nbsp;=&nbsp;0;
+}
+</pre>
+</code>
+<p>Notice it makes use of the <a href="http://www.arduino.cc">Arduino</a> core libraries to simplify the ADC conversions and Pin addressing on the Atmega chips. You can download the Arduino core libraries and include them by simply adding.</p>
+<code>
+<pre>
+#include&nbsp;&lt;WProgram.h&gt;
+</pre>
+</code>
+This will include all the standard avr c libraries and all the wiring libraries.
+<p>The sensors are designed to be plug-and-play. All the electronic circuit is on the brick and you just have to supply +5V, GND and the Signal.</p>
+<img src="16.png">
+<img src="53.jpg">
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/ct.brick.ctmodel2.sch">ct.brick.ctmodel2.sch</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/ct.brick.ctmodel2.brd">ct.brick.ctmodel2.brd</a></li>
+</ul>
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/#input-devices">original project documentation</a></li>
+</ul>
+<p><b>The Network</p></b>
+<p>The project goal was to be able to publish the Power Consumption data we're measuring to the internet. There are several different ways to do that. One solution is to connect each node directly to the internet using standard internet protocols. That way, each node has it's own IP and we use a standard protocol like Ethernet to communicate to our Internet Gateway. Although this solution is getting cheaper thanks to projects like the <a href="http://nanode.eu/">Nanode</a> based on the <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/39662c.pdf">ENC28J60</a> chip. I decided to link the nodes using a more simple solution and use a gateway to connect them to the Internet. There are many low cost protocols to create small micro-controllers networks, some examples are Modbus or Can. However, I decided to create my own network protocol to learn a little bit about networks and protocols.</p>
+<p>1. Physical Layer.<br>
+The network physical layer is based on the <a href="http://en.wikipedia.org/wiki/RS-485">RS-485</a> standard. RS-485 use differential signaling over a twisted pair cable, it works like RS-232 but over long distances. Multiple receivers can be connected to such a network in a linear, multi-drop configuration. By using <a href="http://en.wikipedia.org/wiki/Differential_signaling">differential signaling</a> it means two wires are employed to send a single signal, that's why in order to keep a two wires network we'll have <a href="http://en.wikipedia.org/wiki/Half-duplex#Half-duplex">half-duplex</a> communication only, we won't be able to send and receive at the same time.</p>
+<img src="7.png">
+<img src="5.png">
+<p>2. Comunications protocol.<br> 
+The data framing is based on a really simple structure based on an example by <a href="#">Igor Real</a>. Data packets are 15 bytes, that's enough space for creating a complex message. Information is stored in ASCII except for the data value, however this is not really good considering its performance it makes it a really friendly because you can read it easily, each byte it represents a character encoded in <a href="http://www.asciitable.com/index/asciifull.gif">ASCII</a>. The data value is transmitted as a 32-bits float so 4-bytes are required.<br>
+There are three kind of messages. 
+<ul>
+<li>1. Enquiry (ENQ), when the master request a value to a slave.</li>
+<li>2. Acknowledge (ACK), when a slave receive a request and the request is ok it returns the asked value.</li>
+<li>3. Negative-acknowledge (NAK), when a slave receive a request but this is not ok, the sender checksum  is not the same as the checksum of the received packet.</li>
+</ul>
+<img src="6.png">
+<p>3. Network Architecture.<br> http://pdfserv.maxim-ic.com/en/an/AN763.pdf
+The network is a simple master-slave architecture because we just have half-duplex communication. There's a single master that request information to the slave nodes one after the other. Check <a href="http://www.ti.com/lit/an/slla070d/slla070d.pdf">this</a> and <a href="http://pdfserv.maxim-ic.com/en/an/AN763.pdf">this</a> RS-485 application reports.
+
+
+</p>
+<img src="8.png">
+<p>#. Programing the network<br> 
+The network functions makes also use of the Arduino core libraries. The logic of bits and bytes gets a little bit confuse at the beginning, this tutorial helps as an introduction: <a href="http://www.arduino.cc/playground/Code/BitMath">The Bitmath Tutorial</a>. For an ASCII encoding reference check <a href="http://www.asciitable.com/index/asciifull.gif">this</a>  table</p>
+<code>
+<pre>
+<span class="highlighter">void</span> sendENQ(<span class="highlighter">char</span> id[3], <span class="highlighter">char</span> data_type[2], <span class="highlighter">char</span> code[3], <span class="highlighter">long</span> value){
+
+&nbsp;&nbsp;<span class="highlighter">byte</span> idByte[2]; <span class="lowlighter">// Byte array to store the 2 bytes id</span>
+
+&nbsp;&nbsp;idByte[0]&nbsp;=&nbsp;<span class="highlighter">byte</span>(idByte[0]); <span class="lowlighter">// id char array to byte</span>
+&nbsp;&nbsp;idByte[1]&nbsp;=&nbsp;<span class="highlighter">byte</span>(idByte[1]);  <span class="lowlighter">// id char array to byte</span>
+
+
+&nbsp;&nbsp;<span class="highlighter">byte</span> data_typeByte = <span class="highlighter">byte</span>(data_type[0]); <span class="lowlighter">// data_type char array to byte</span>
+
+&nbsp;&nbsp;<span class="highlighter">byte</span> codeByte[2]; <span class="lowlighter">// byte array to store the 2 bytes code</span>
+
+&nbsp;&nbsp;codeByte[0]&nbsp;=&nbsp;<span class="highlighter">byte</span>(codeByte[0]); <span class="lowlighter">// code char array to byte</span>
+&nbsp;&nbsp;codeByte[1]&nbsp;=&nbsp;<span class="highlighter">byte</span>(codeByte[1]); <span class="lowlighter">//  code char array to byte</span>
+
+
+&nbsp;&nbsp;<span class="highlighter">byte</span> sign = 0x20; <span class="lowlighter">// set sign as space ASCII ' ' (positive ) by default </span>
+
+&nbsp;&nbsp;<span class="highlighter">if</span> (value &lt; 0.0) <span class="lowlighter">// if value is negative</span>
+&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;sign&nbsp;=&nbsp;0x2D;&nbsp;<span class="lowlighter">// set sign negative ASCII '-'</span>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;=&nbsp;-value;
+&nbsp;&nbsp;}
+
+&nbsp;&nbsp;<span class="highlighter">byte</span> data[4]; <span class="lowlighter">// byte array to store a float as a little-endian 4 bytes </span>
+
+&nbsp;&nbsp;data[0]&nbsp;=&nbsp;(value&nbsp;&gt;&gt;&nbsp;24);&nbsp;&nbsp;&nbsp;<span class="lowlighter">// float first 8-bits </span>
+&nbsp;&nbsp;data[1]&nbsp;=&nbsp;(value&nbsp;&gt;&gt;&nbsp;16);&nbsp;&nbsp;&nbsp;<span class="lowlighter">// float second 8-bits</span>
+&nbsp;&nbsp;data[2]&nbsp;=&nbsp;(value&nbsp;&gt;&gt;&nbsp;8);&nbsp;&nbsp;&nbsp;&nbsp;<span class="lowlighter">// float third 8-bits</span>
+&nbsp;&nbsp;data[3]&nbsp;=&nbsp;(value&nbsp;&amp;&nbsp;0xFF);&nbsp;&nbsp;<span class="lowlighter">// float fourth  8-bits</span>
+
+
+&nbsp;&nbsp;<span class="highlighter">unsigned</span> <span class="highlighter">int</span> checksum_ACK;
+
+&nbsp;&nbsp;checksum_ACK=idByte[0]+idByte[1]+5+data_typeByte+codeByte[0]+codeByte[1]+sign+data[0]+data[1]+data[2]+data[3]+3;&nbsp;<span class="lowlighter">// Message checksum</span>
+
+&nbsp;&nbsp;UCSR0A=UCSR0A&nbsp;|(1&nbsp;&lt;&lt;&nbsp;TXC0);&nbsp;<span class="lowlighter">// Clear the transfer flag probably set by previous transfers.</span>
+
+&nbsp;&nbsp;<span class="highlighter">digitalWrite</span>(pinTX,<span class="halflighter">HIGH</span>); <span class="lowlighter">// Set MAX485 RE / DE pins HIGH to transmit mode</span>
+
+&nbsp;&nbsp;<span class="highlighter">delay</span>(1); <span class="lowlighter">// Wait the MAX485 to be on trasmitter mode</span>
+
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(<span class="highlighter">byte</span>(0x00)); <span class="lowlighter">// Open Message // byte is required because 0x00 can be red as char null</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(idByte[0]); <span class="lowlighter">// Slave node id</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(idByte[1]); <span class="lowlighter">// Slave node id</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(0x05); <span class="lowlighter">// Message Control ENQ &gt; Request</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(data_typeByte); <span class="lowlighter">// Function group </span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(codeByte[0]);  <span class="lowlighter">// Function code </span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(codeByte[1]);  <span class="lowlighter">// Function code </span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(sign); <span class="lowlighter">// Positive / Negative Value</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(data[0]);	<span class="lowlighter">// Requested Value</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(data[1]);	<span class="lowlighter">// Requested Value</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(data[2]);	<span class="lowlighter">// Requested Value</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(data[3]);  <span class="lowlighter">// Requested Value</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(0x03); <span class="lowlighter">// Close Value</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(checksum_ACK &gt;&gt; 8); <span class="lowlighter">// Checksum first most significant bits</span>
+&nbsp;&nbsp;<span class="highlighter"><b>Serial</b></span>.<span class="highlighter">write</span>(checksum_ACK &amp; 0xFF);  <span class="lowlighter">// Checksum first less significant bits</span>
+
+&nbsp;&nbsp;<span class="highlighter">while</span> (!(UCSR0A &amp; (1 &lt;&lt; TXC0))); <span class="lowlighter">// Wait for the transmision to complete </span>
+
+&nbsp;&nbsp;<span class="highlighter">digitalWrite</span>(pinTX,<span class="halflighter">LOW</span>);  <span class="lowlighter">// Set MAX485 RE / DE pins LOW to receiver mode</span>
+
+}
+</pre>
+</code>
+<p><b>The Node</p></b>
+The node design is really simple.
+<img src="11.png">
+<img src="13.png">
+<img src="52.jpg">
+<img src="54.jpg">
+<img src="55.jpg">
+<img src="57.jpg">
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.node.v1.sch">fabenergy.node.v1.sch</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.node.v1.brd">fabenergy.node.v1.brd</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.node.v2.sch">fabenergy.node.v2.sch</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.node.v2.brd">fabenergy.node.v2.brd</a></li>
+</ul>
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.node.firmware.pde">fabenergy.node.firmware.pde</a></li>
+</ul>
+<p>The nodes housing is desiged to be lasercut on 3mm plywood and assembled using M3 Allen screws. The press-fit + screws system is based on the <a href="http://www.thingiverse.com/thing:457">Makerbot</a> structure design.</p>
+<img src="23.png">
+<img src="22.png">
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.node.lasercut.dxf">fabenergy.node.lasercut.dxf</a></li>
+</ul>
+<p><b>The Gateway</p></b>
+<p>The gateway is the same as the master node. It retrieve values from the nodes and it publish them to <a href="http://www.pachube.com">Pachube</a> using standard <a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a> <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">PUTS</a>.</p>
+<p>The first version was designed to run on a host computer that acts as gateway and communicates with the network using a simple FTDI chip. It was written in <a href="http://processing.org">Processing</a>.</p>
+<img src="10.png">
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/#interface-and-application-programming">Project documentation</a></li>
+</ul>
+<p>The new version is designed to be standalone and is designed to be stand-alone. The master have the same design as the slave nodes and it communicates via SPI with an Arduino Ethernet-Shield based on the <a href="http://www.wiznet.co.kr/include_Files/Just_Download.asp?PK_NUM=82&file_local_path=ReferenceFiles&file_local_name=W5100_Datasheet_v1.2.3[0].pdf">Wiznet 5100</a>.</p>
+<p>The code takes advantatge of several libraries builded on top of the Arduino core: the Pachube library, the Ethernet library and the SPI library.An step forward will be to move the design to the <a href="http://www.microchip.com/wwwproducts/Devices.aspx?dDocName=en022889">ENC28J60</a> and integrate it directly on the master node. Check the <a href="http://wiki.hackspace.org.uk/wiki/Project:Nanode">Nanode</a> project for more information.</p>
+<img src="12.png">
+<p>#. Programing the gateway<br>
+<p>The code structure is really simple because it is based on top of this powerful libraries.</p>
+<ul>
+<li><a href="http://code.google.com/p/pachubelibrary/">ERxPachube library</a></li>
+<li><a href="http://www.arduino.cc/en/Reference/Ethernet">Ethernet library</a></li>
+<li><a href="http://arduino.cc/en/Reference/SPI">SPI library</a></li>
+</ul> 
+<code>
+<pre>
+&nbsp;&nbsp;dataout.<span class="highlighter">updateData</span>(tagId, requestPacket(nodeId, function, functionCode));
+</pre>
+</code>
+<ul>
+<li>1. We get a list of all the tag feeds and we start requesting the first one.</li>
+<li>2. The Master Node request to an Slave node a function and a function code associated with one of the sensors.</li>
+<li>3. The Slave retrieve the Value to the Master. If everything is successful it updates the values associated with the Pachube tag id and goes for the next Pachube feed tag. If no answer is received it request the slave node 5 times more and it goes to the next.</li>
+<li>4. Once a cycle is finished we Publish to pachube all the requested data thorough an http PUT.</li>
+<li>*. There's no local backup of the data so in case the Internet connection isn't working we can lost the data. The ethernet shield SD card can be easily used as a backup logging device using the <a href="http://www.arduino.cc/en/Reference/SD">SD library</a>.</li>
+</ul>
+<br>
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.gateway.firmware.pde">fabenergy.gateway.firmware.pde</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.bridge.v2.sch">fabenergy.bridge.v2.sch</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/final-project/fabenergy.bridge.v2.brd">fabenergy.bridge.v2.brd</a></li>
+</ul>
+<img src="62.png">
+<ul>
+<li>simple serial data logging for testing <a href="http://pyserial.sourceforge.net/examples.html#miniterm">miniterm.py</a></li>
+</ul>
+<img src="68.png">
+<p><b>Development process / First prototypes</p></b>
+<img src="66.jpg">
+<img src="25.jpg">
+<img src="24.jpg">
+<img src="65.jpg">
+<img src="64.jpg">
+<img src="63.jpg">
+<img src="21.jpg">
+<img src="20.jpg">
+<img src="19.jpg">
+<img src="18.jpg">
+<img src="17.jpg">
+<code>Documentation is still in process. Please, come back soon!</code>
+
+
+
+
+
+

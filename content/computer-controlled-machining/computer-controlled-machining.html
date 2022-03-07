@@ -1,0 +1,43 @@
+<p id="intro">
+An small <a href="http://en.wikipedia.org/wiki/Multi-touch">multitouch table</a> frame. I've already worked with <a href="http://pral2a.com/flat-chair">wood press-fit</a> that's why this time I decided to built something with <a href="http://en.wikipedia.org/wiki/Alucobond">Alucobond</a>, a three layers sandwich made out of two 0.8 mm aluminium sheets and an inner <a href="http://en.wikipedia.org/wiki/Polyethylene">PE</a> layer. 
+</p>
+<p><b>The Concept</p></b>
+<img src="1.jpg">
+<p><b>The Sketch Process</p></b>
+Concept and material testing.
+<img src="2.jpg">
+Angles and size calculation based on a processing sketch found <a href="#">here</a>.
+<img src="3.png">
+<p><b>The Cad Process</p></b>
+Modeling process done in <a href="http://www.rhino3d.com/">Rhino 3D</a>.
+<img src="4.jpg">
+<img src="5.jpg">
+Quick render done in Rhino 3D.
+<img src="0.png">
+<p><b>The Cam Process</p></b>
+Solid flattening and border extraction for the CAM process. When you work with flat materials is faster to work directly with curves and define the Z heights during the CAM strategy.
+<img src="8.jpg">
+Tool selection for each milling strategy.
+<img src="11.jpg">
+Final tool selection.
+<img src="9.jpg">
+<code>
+<ul>
+<li>3mm flat mill for hole drilling, face pocketing and engraving</>
+<li>6mm flat mill for profile cutting</li>
+<li>93º vee mill for engraving the folding edges</li>
+</ul>
+</code>
+The CAM strategy was done in <a href="www.rhinocam.com/">Rhino CAM</a> a CAM plugin for Rhino 3D. However this is a really good software for production environments it's not open source and it's not cheap. For small FabLab projects FabModules is a good choice, it's free and you can export G-Code for the ShopBot.
+<img src="12.jpg">
+A machine strategy is created for each process. A machine strategy is described by the tool you're using, the CAD geometry you want to produce and the process we want to do with that tool. A tutorial on Rhino CAM can be found on <a href="wiki.fablabbcn.org/Precix_Milling">this</a> page at the FabLab BCN wiki. 
+<img src="13.png">
+The final G-Code was exported from Rhino CAM and load on the <a href="">Precix Milling Machine</a>, a 3 axis CNC milling machine. A tutorial on operating this machine can be found on <a href="wiki.fablabbcn.org/Precix_Milling">this</a> page at the FabLab BCN wiki. Compared to Shopbot that's driven by stepper motors working in open loop the Precix is driven by DC motors attached to optical encoders in a closed loop (servos). Everything is run by a real-time Linux OS. However the Precix mechanical design seems less robust that the Shopbot and it has a smaller router, it usually achives better results on most soft materials. 
+<img src="14.jpg">
+<img src="15.jpg">
+<img src="19.jpg">
+<img src="16.jpg">
+<img src="17.jpg">
+Fist assembly tests.
+<img src="18.jpg">
+

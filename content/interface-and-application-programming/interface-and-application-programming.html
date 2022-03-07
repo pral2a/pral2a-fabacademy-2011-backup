@@ -1,0 +1,31 @@
+<p id="intro">
+For the Interface Programming assignment I create an interface for my FAB Energy final project.</p>
+<p><b>THE FINAL RESULT</p></b>
+<iframe src="http://player.vimeo.com/video/25980401?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="545" height="341" frameborder="0"></iframe>
+<p><b>THE PROGRAMMING</p></b>
+<img src="5.png">
+<p>
+The small app is written in <a href="http://processing.org/">Processing</a>. The serial interface with the network is done using the <a href="http://processing.org/reference/libraries/serial/index.html">Serial</a> library. The data is published to <a href="http://pachube.com/">Pachube</a> using the EEML (Extended Environments Markup Language) that uses the XML data modeling structure, this is implemented using the <a href="http://www.eeml.org/library/">EEML library</a> . The GUI is based on the <a href="http://www.sojamo.de/libraries/controlP5/">ControlP5</a> library.</p>
+<p>The app is based on diferent modules.</p>
+<ul>
+<li>1. Network receiver, where the nodes comming from the serial port are check and unpackage.</li>
+<li>2. Network Buffer, where data comming from the nodes is stored waiting to be processed.</li>
+<li>3. Pachube, where data is publish to Pachube.</li>
+<li>4. GUI, the user interface for visualizing the nodes data and setup the parameters.</li>
+<li>5. Configuration setup, where all the parameters are set depending on the setup.</li>
+<li>6. File Reader / Writer, manage the log and config text files.</li>
+</ul>
+</p>
+<p><b>SCREEN SHOTS</p></b>
+<img src="2.png">
+<img src="3.png">
+<img src="4.png">
+<img src="6.png">
+<p><b>SOURCE</p></b>
+<ul>
+<li><a href="#">FAB_energy_source.zip</a></li>
+</ul>
+<p><b>APP DOWNLOAD</p></b>
+<ul>
+<li><a href="#">FAB_Energy.dmg</a>(for MAC OS)</li>
+</ul>

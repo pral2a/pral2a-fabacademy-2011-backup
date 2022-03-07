@@ -1,0 +1,56 @@
+<p id="intro">For the input devices assignment I decided to do two boards: an Step sensor based on <a href="http://academy.cba.mit.edu/classes/input_devices/index.html">Neil's Step Hello Board</a> and a Current Transducer input board for measuring devices power conumption.
+<ul>
+<li><a href="#step">hello.step.45</a><li>
+<li><a href="#meter">hello.meter.45</a><li>
+</ul>
+</p>
+<p><b id="step">Hello Step!</p></b>
+<img src="11.jpg">
+<img src="12.png">
+<img src="12.png">
+<img src="22.jpg">
+
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/input-devices/hello.step.flexible.45.pdf">hello.step.flexible.45.pdf</a></li>
+</ul>
+<p></p><p></p>
+<p><b id="meter">Hello Meter!</p></b>
+A CT (Current Transducer) input board for mesuring AC current and read it over the Serial port. 
+<p><b>THE BOARD</p></b>
+New version! Please, check the EAGLE new updated file, the first had a mistake. Pictures coming soon!
+<img src="1.jpg">
+<img src="2.jpg">
+<img src="3.jpg">
+<img src="8.png">
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/input-devices/ct.ftdi.45.guillem.new.sch">ct.ftdi.45.guillem.new.sch</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/input-devices/ct.ftdi.45.guillem.new.brd">ct.ftdi.45.guillem.new.brd</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/input-devices/ct.ftdi.45.guillem.engrave.png">ct.ftdi.45.guillem.engrave.png</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/input-devices/ct.ftdi.45.guillem.cut.png">ct.ftdi.45.guillem.cut.png</a></li>
+</ul>
+<p><b>THE PRINCIPLE: THE CT SENSOR</p></b>
+The current transducer (CT) sensor works by induction and it's based on the <a href="http://en.wikipedia.org/wiki/Rogowski_coil"> Rogowski principle</a>.The current in the main wire produces a magnetic field in the ferrite core of the transducer. A secondary coil is wrapped around the ferrite core. When a resistor is connected across the terminals of the coil a current flows that is proportional to the current in the main wire. The sensor just clips around the wire to be measured which means that it can be easily used to measure the electrical energy used by a whole building.
+<p><b>THE PRINCIPLE: BURDEN RESISTOR + VOLTAGE DIVIDER</p></b>
+The current transducer is setup in parallel with a Burden Resistor that acts as a load, creating a voltage drop proportional to the current flowing through the transducer. Because the current output is AC and the Attiny can't read a negative voltage a <a href="http://www.afrotechmods.com/groovy/voltage_divider/voltage_divider.htm">Voltage Divider</a> is needed. The voltage divider divides the AC output by 2.5V getting always a positive value. A capacitor is also added to stabilize the signal.
+<img src="7.jpg">
+<p><b>THE PROCESS</p></b>
+<img src="4.jpg">
+<img src="5.jpg">
+<img src="6.jpg">
+<p><b>THE FIRMWARE</p></b>
+<code>
+<pre>
+&nbsp;&nbsp;<span style="color: #FF0000;">for</span> (<span style="color: #FF0000;">int</span> n=0; n&lt;Samples; n++)
+&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;I_lastSample=I_Sample;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sample&nbsp;=&nbsp;<span style="color: #FF0000;">analogRead</span>(inPinI);
+&nbsp;&nbsp;&nbsp;&nbsp;I_LastFiltered&nbsp;=&nbsp;I_Filtered;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Filtered&nbsp;=&nbsp;0.996*(I_LastFiltered+I_Sample-I_lastSample);
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sq&nbsp;=&nbsp;I_Filtered&nbsp;*&nbsp;I_Filtered;
+&nbsp;&nbsp;&nbsp;&nbsp;I_Sum&nbsp;+=&nbsp;I_Sq;
+&nbsp;&nbsp;}
+</pre>
+</code>
+Coming soon.
+
+

@@ -1,0 +1,23 @@
+Partlist
+
+Exported from hello.ftdi.44.guillem.sch at 09/03/11 2:52
+
+EAGLE Version 5.11.0 Copyright (c) 1988-2010 CadSoft
+
+Part     Value          Device               Package    Library  Sheet
+
+C1       1uF            C-USC1206            C1206      resistor 1
+FTDI                    M06SMD               1X06-SMD   SparkFun 1
+IC1      ATTINY44-SSU   ATTINY44-SSU         SOIC14     fab      1
+ISP      AVRISPSMD      AVRISPSMD            2X03SMD    fab      1
+LED1                    LEDRGBOLD            P-LCC-4-3  fab      1
+R1       10K            R-US_R1206           R1206      resistor 1
+R2       10K            R-US_R1206           R1206      resistor 1
+R3       10K            R-US_R1206           R1206      resistor 1
+R4       10K            R-US_R1206           R1206      resistor 1
+R5       10K            R-US_R1206           R1206      resistor 1
+R6       10K            R-US_R1206           R1206      resistor 1
+R7       0              R-US_R1206           R1206      resistor 1
+S1                      6MM_SWITCH6MM_SWITCH 6MM_SWITCH ng       1
+S2                      6MM_SWITCH6MM_SWITCH 6MM_SWITCH ng       1
+U$2      RESONATOR      RESONATOR            EFOBM      fab      1

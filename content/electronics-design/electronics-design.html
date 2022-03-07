@@ -1,0 +1,32 @@
+<p id="intro">
+HELLO BOARD! A small PCB driven by an AVR ATtiny44 with 2 BUTTONS, 1 RGB LED and a SERIAL INTERFACE. 
+</p>
+<P><B>The Pcb</P></B>
+<img src="12.jpg">
+<P><B>The Design</P></B>
+<p>The PCB was designed in <a href="http://www.cadsoft.de/">EAGLE</a>, you can download all the files on the links below.</p>
+<p>The BOARD buttons are attached to PA2 and PA3, The RGB LED is attached to PA7, PA6, PA5. Because PA6 and PA7 are MISO and MOSI pins, too, the Green and the Blue LED's blink when the board is being programed. The LED's are setup in inverse mode, so when the PIN is HIGH, there is no path to GND for the cathode of the LED, the LED is off. When the PIN is LOW, then because the micro is connected to ground, current flows and the LED lights on.</p>
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.ftdi.44.guillem.sch">hello.ftdi.44.guillem.sch</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.ftdi.44.guillem.brd">hello.ftdi.44.guillem.brd</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.ftdi.44.guillem.sch.png">hello.ftdi.44.guillem.sch.png</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.ftdi.44.guillem.parts.txt">hello.ftdi.44.guillem.parts.txt</a></li>
+</ul>
+<img src="hello.ftdi.44.guillem.sch.png">
+<img src="5.png">
+<P><B>Process Details</P></B>
+<img src="6.png">
+<img src="3.png">
+<img src="4.png">
+<img src="2.jpg">
+<img src="10.jpg">
+<P><B>Programs</P></B>
+<p>rgb</p>
+<ul><li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.RGB.44.guillem.asm">hello.RGB.44.guillem.asm</a></li></ul>
+<p>serial echo</p>
+<img src="9.png">
+<ul><li><a href="http://fab.cba.mit.edu/about/fab/hello/ftdi/hello.ftdi.44.echo.asm">hello.ftdi.44.echo.asm</a></li></ul>
+
+
+
+

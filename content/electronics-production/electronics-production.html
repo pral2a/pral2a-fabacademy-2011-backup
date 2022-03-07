@@ -1,0 +1,43 @@
+<p id="intro">
+For the electronics production assigment we built an <a href="http://en.wikipedia.org/wiki/In-system_programming/">in-circuit programmer</a> (ISP) based on the USBtiny and V-USB firmwares, the <a href="http://fab.cba.mit.edu/content/projects/fabisp/">FabISP</a>. 
+</a>
+</p>
+<p><b>My Fab Isp</p></b>
+<p>I did two FAB-ISP old version boards because the first seems not to work. Finally I found there was a problem in the ATtiny44 because it wasn't solder properly and some contacts were missing.</p>
+<img src="3.jpg">
+<p><b>Production Process: Pcb Cam</p></b>
+<p>CAM using the NEW <a href="http://kokompe.cba.mit.edu/dist/">fab modules.</a> Fab modules has presets already saved for manufacturing PCB's that makes the CAM workflow faster than with the old cad.py.</p>
+<img src="1.jpg">
+<p>Manufacturing process using the Roland Modela MDX-20 and 1/64 (engraving) + 1/32 (cutting) endmills. The same work can be done using a <a href="http://makeyourbot.org/">Mantis</a> DIY machine.</p>
+<img src="2.jpg">
+<p><b>Production Process: Microcontroller Programing</p></b>
+<p>I had a little bit of trouble with the fuses but finally I fix it and it works!</p>
+<p>For programing you need AVRDUDE and the AVRGCC compiler, on Mac you can just setup the <a href="http://www.obdev.at/products/crosspack/index.html">ARV CrossPACK</a>. For those who don't like the shell you can try <a href="http://www.vonnieda.org/software/avrfuses"> AVR Fuses</a> for MAC or the <a href="http://www.atmel.com/dyn/products/tools_card.asp?tool_id=2725">AVR Studio</a> for WIN</p>
+<p>Makefile changes:</p>
+<p>We did the old FAB ISP version because we just had the 12Mhz Crystal so:</p>
+<code>F_CPU   = 12000000	<c># edit this line for crystal speed, in Hz </c></code>
+<p>We use a comercial AVR MKII ISP so we had to define it at the makefile programmer list and comment the rest:</p>
+<code>AVRDUDE = avrdude -c avrispmkii -P usb -p $(DEVICE) -v</code>
+<p>A full list with diferent ISP options you can use (uncomment the one you want to use):</p>
+<code>
+# AVRDUDE = avrdude -c usbtiny -p $(DEVICE) <c># USB tiny based devices (like the FAB ISP)</c><br>
+# AVRDUDE = avrdude -c avrispmkii -P usb -p $(DEVICE) <c># AVR MKII off-the-shelf ISP (around $30 aprox)</c><br>
+# AVRDUDE = avrdude -p $(DEVICE) -c bsd <c># Parallel Port DB25M ISP check the wiring here: http://fab.cba.mit.edu/about/fab/</c><br>
+# AVRDUDE = avrdude -p $(DEVICE) -c dasa <c># Serial Port DASA ISP check the wiring here: http://fab.cba.mit.edu/about/fab/</c>
+</code>
+<p>In your shell pointing to your Firmware folder type:</p>
+<code>$ make clean <c># Clean the old compiled HEX files</c></code>
+<code>$ make hex <c># Compile the C code using GCC and create the .hex file</c></code>
+<code>$ avr-gcc -Wall -Os -DF_CPU=12000000 -Iusbdrv -I -mmcu=attiny44 <c># That's what the commant $ make hex does, avr-gcc is the C compiler.</c></code>
+<code>$ make program <c># Burn the fuses and flash the program (load the .hex) to your Fab ISP</c></code>
+<code>$ avrdude -c usbtiny -p attiny44 -U hfuse:w:0xDF:m -U lfuse:w:0xFF:m <c># That's what the commant $ make program does first, it burns the fuses on to the micro.</c></code>
+<code>$ avrdude -c usbtiny -p attiny44 -U flash:w:main.hex:i <c># That's what the commant $ make program does after, it flash the program (hex file) on to the micro.</c></code>
+<p>Remember to plug the USB to you FAB ISP to power it, close both jumpers (J1 and J2) and rember the pins to be right MOSI > MOSI etc…</p>
+<img src="4.jpg">
+<img src="5.jpg">
+<img src="6.jpg">
+<p><b>PRODUCTION PROCESS: TESTING</p></b>
+<p>Test your ISP programing another FAB ISP or any board. For example you can burn the bootloader of an Arduino by plug-in your ISP to its ISP plug and choosing Board>Burn Bootloader>USB tiny on the Arduino IDE. You can burn new ATMEGA compatible chips and build your own Arduinos!</p>
+<img src="9.jpg">
+<img src="7.jpg">
+<img src="8.jpg">

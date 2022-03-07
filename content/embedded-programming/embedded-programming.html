@@ -1,0 +1,22 @@
+<p id="intro">
+Serial to RGB BOARD! You type a color and... 
+</p>
+The board has a preloaded list of 24 colors associated with its 24-bit RGB representation (0-255 x 0-255 x 0-255). The board can receive serial messages coming from your serial terminal. When a message match iany of the colors avaiable on the preloaded color list the board does Soft PWM on the 3 pins the RGB LED is conectected. If it's succesfull it returns a message over the serial port with the color.
+<p><b>The Board</p></b>
+<img src="2.jpg">
+<img src="1.jpg">
+<p><b>Working</p></b>
+You can watch it <a href="http://cl.ly/08400u0b1328040B251B">here</a>.
+</video>
+<p><b>The Design</p></b>
+This board was design during the Electronics Design assignment.
+<ul>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.ftdi.44.guillem.sch">hello.ftdi.44.guillem.sch</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.ftdi.44.guillem.brd">hello.ftdi.44.guillem.brd</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.ftdi.44.guillem.sch.png">hello.ftdi.44.guillem.sch.png</a></li>
+<li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/electronics-design/hello.ftdi.44.guillem.parts.txt">hello.ftdi.44.guillem.parts.txt</a></li>
+</ul>
+<p><b>The Code</p></b>
+<p>Addressing ports on plain AVR C is not an easy thing. On the Arduino site there's a good introduction on <a href="http://arduino.cc/en/Reference/PortManipulation">Ports Registers</a> manipulation.</p>
+<ul><li><a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/output-devices/hello.ftdi.44.serial.wk.c">hello.ftdi.44.serial.wk.c</a></li></ul>
+

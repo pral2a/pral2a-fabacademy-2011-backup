@@ -1,0 +1,50 @@
+<div id="intro">
+<p><b>About this site</p></b>
+</div>
+<p>
+This site is a work in progress project where I try to create an small project viewer that asyncronous read .html files allowing you to navigate on them, creating a more dinamic display out of plain .html content. The main goal is to learn Javascript and the JQuery library.
+</p>
+<ul><li>
+<img src="1.png">
+Download the source <a href="http://academy.cba.mit.edu/labs/barcelona/guillem.camprodon/content/project-management/gerani-source.zip">gerani-source.zip</a>
+</li></ul>
+<code>git@github.com:pral2a/gerani.git</code>
+<p><b>Mercurial Tips on Mac OS X</p></b>
+<p>If you're using Mercurial on Mac you probably already noticed case-folding collisions are always a problem.</p>
+<code>
+$ hg update
+abort: case-folding collision between somefile and SomeFile
+</code>
+<p>That's because Mac OS X and Windows, oposite to Linux and other OS's, aren't case-folding sensitive. Since  Mercurial 1.7.5  this problem seems to be more or less solve on Windows but it's still a problem on Mac.</p>
+<p>The easiest solution is to setup the Mercurial <a href="http://mercurial.selenic.com/wiki/CaseFoldExtension">Case Fold Extension</a>. Here are the steps you should follow:
+</p>
+Download the Extension on your Desktop.
+<code>
+$ cd ~/Desktop
+$ hg clone https://bitbucket.org/bradobro/hgfold
+</code>
+Copy the Extension to your libraries directory.
+<code>
+$ sudo cp -r hgfold /usr/local/bin/hgfold
+</code>
+Go to your mercurial repository root.
+<code>
+$ cd ~/your_repository_folder
+</code>
+Edit the your repository hgrc file
+<code>
+$ open .hg/hgrc // you can also edit it with Nano or Vim
+</code>
+On extensions add the path to your extension
+<code>
+[extensions]
+fold = /usr/local/lib/hgfold/fold.py
+</code>
+Done it! Now every time Mercurial shows you a case-collision problem just type.
+<code>
+$ hg update --fold 
+</code>
+
+
+
+
